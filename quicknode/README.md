@@ -12,4 +12,4 @@ npx hardhat node
 npx hardhat run scripts/deploy.js
 ```
 ## Openbooks contract
-[https://goerli.etherscan.io/address/0x5b4862e09E0c0f20be0B94B3F065D2cEb25d341C](https://goerli.etherscan.io/address/0x5b4862e09E0c0f20be0B94B3F065D2cEb25d341C)# openbooks
+[https://goerli.etherscan.io/address/0x5b4862e09E0c0f20be0B94B3F065D2cEb25d341C](https://goerli.etherscan.io/address/0x5b4862e09E0c0f20be0B94B3F065D2cEb25d341C)
