@@ -10,11 +10,15 @@
 - created a mapping of address to string `messages` which stores the message for every receipient address
 - added an extra argument arg[4] `message` to the test cli which holds the receipt message
 - Increased gas price and gas limit to allow function execution
-
+- Edited .env file with my Private Key.
+- Added testnets (Networks) into my metamask to track currencies (native tokens) and for verification purposes.
+- Transferd some test tokens (to pay the gas Fees) for each of the network axelar network mentioned in the testnet.json file & aUSDC from the axelar discord server.
+- Deployed call-contract-with-token on testnet. using command - node scripts/deploy examples/call-contract-with-token testnet
+- ran test.js script on testnet and transferred some aUSD to two different addresses from Polygon to Avalanche. using command - node scripts/test examples/call-contract-with-token testnet "Polygon" "Avalanche" {amount} {address} {message}
 
 
 ```
-node scripts/test examples/call-contract-with-token testnet "Avalanche" "Polygon" 1 "0x7D162247efd7a3c2Fa31d2e90cF63c8Ca6aD7d4e" "testing" 
+node scripts/test examples/call-contract-with-token testnet "Polygon" "Avalanche" 1 "0x7D162247efd7a3c2Fa31d2e90cF63c8Ca6aD7d4e" "testing" 
 ```
 
 ## Introduction
