@@ -59,8 +59,8 @@ const Library = ({myNfts,spinner}) => {
     <div className='flex flex-col justify-between h-3/4'>
         <ToastContainer />        
         <h3 class="text-3xl font-bold dark:text-white py-3">Library</h3>
-        <Modal/>
-        <div className='h-[70%] flex flex-row flex-wrap justify-between'>
+        {/* <Modal/> */}
+        <div className='h-full flex flex-row flex-wrap justify-between'>
             {
                 myNfts.map(book => {
                    return (<div className="max-w-sm bg-white border border-gray-200 rounded-lg shadow-md dark:bg-gray-800 dark:border-gray-700 mt-3">
