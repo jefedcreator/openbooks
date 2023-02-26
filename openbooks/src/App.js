@@ -1,6 +1,6 @@
 import React, { useEffect, useState, useCallback } from 'react'
 import './App.css';
-import { useAccount, useConnect, useEnsName, useSigner } from 'wagmi'
+import { useAccount, useSigner } from 'wagmi'
 import { InjectedConnector } from 'wagmi/connectors/injected'
 // import { Router,Route, Routes } from "react-router-dom";
 import Home from './pages/Home';
@@ -22,12 +22,12 @@ import Marketplace from './pages/Marketplace';
 import Library from './pages/Library';
 // import Toas
 
-
 function App() {
   const { data: signer, isError, isLoading } = useSigner()
   const[spinner, setSpinner] = useState(false)
   const[nftSupply, setNftSupply] = useState(null)
   const[nftDetails, setNftDetails] = useState([])
+  const [profit, setProfit] = useState(null)
   const { address, isConnected } = useAccount()
   const provider = useProvider()
 
@@ -51,6 +51,7 @@ const getNfts = async () => {
 try {
     const nfts = [];
     const nftsLength = await openbooks.totalSupply();
+    console.log("total supply", nftsLength);
     for (let i = 0; i < Number(nftsLength); i++) {
         const nft = new Promise(async (resolve) => {
             const res = await openbooks.tokenURI(i);
@@ -68,7 +69,6 @@ try {
             });
         });
         nfts.push(nft);
-        
     }
     return Promise.all(nfts);
 } catch (e) {
@@ -81,6 +81,7 @@ const fetchNftMeta = async (ipfsUrl) => {
 try {
     if (!ipfsUrl) return null;
     const meta = await axios.get(ipfsUrl);
+    console.log("meta",meta);
     return meta;
 } catch (e) {
     console.log({e});
@@ -97,6 +98,20 @@ try {
 //     }
 //   };
 
+const getProfit = () =>{
+  return new Promise((resolve, reject) => {
+    if(!isConnected){
+      reject("Connect wallet")
+    }
+    resolve(openbooks.profit(address))
+  })
+}
+
+const getProfitHandler = async() =>{
+  const balance = await getProfit()
+  setProfit(parseInt(balance))
+}
+
 const getAssets = async () => {
     try {
       setSpinner(true);
@@ -112,11 +127,8 @@ const getAssets = async () => {
 
 useEffect(() => {
     try {
-    //   if (address) {
-        getAssets();
-        // fetchContractOwner(minterContract);
-        // handleOwned()
-    //   }
+      getAssets();
+      getProfitHandler();
     } catch (error) {
       console.log({ error });
     }
@@ -132,12 +144,13 @@ const myNfts = nftDetails.filter(book => book.owner == address)
           <Route exact path="/" element={<Home />} />
           <Route path="/mint" element={<Mint />} />
           <Route path="/library" element={<Library
-            openbooks={openbooks}
+            // openbooks={openbooks}
             myNfts={myNfts}
             spinner={spinner}
+            profit={profit}
           />} />
           <Route path="/marketplace" element={<Marketplace 
-            openbooks={openbooks}
+            // openbooks={openbooks}
             ntfForSale={ntfForSale}
             spinner={spinner}
           />} />
