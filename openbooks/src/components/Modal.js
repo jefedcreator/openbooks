@@ -1,5 +1,6 @@
 import React from 'react'
 import { ethers } from 'ethers';
+import BigNumber from 'bignumber.js';
 
 const Modal = ({setModal, setPrice, price,relistHandler}) => {
   return (
@@ -16,7 +17,7 @@ const Modal = ({setModal, setPrice, price,relistHandler}) => {
                         <form className="space-y-6">
                             <div>
                                 <label htmlFor="price" className="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Book price</label>
-                                <input type="number" name="price" id="price" className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-600 dark:border-gray-500 dark:placeholder-gray-400 dark:text-white" placeholder="1 Fil" required onChange={(e)=>setPrice(ethers.utils.parseEther(e.target.value))}/>
+                                <input type="number" name="price" id="price" className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-600 dark:border-gray-500 dark:placeholder-gray-400 dark:text-white" placeholder="1 Fil" required onChange={(e)=>setPrice(ethers.utils.parseEther(new BigNumber(e.target.value).toString()))}/>
                             </div>
                         </form>
                     </div>
