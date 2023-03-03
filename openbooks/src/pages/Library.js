@@ -51,7 +51,7 @@ const Library = ({ myNfts, spinner, profit }) => {
       setSpinner(true);
       // let value = await book(index)
       console.log(parseInt(bookIndex), "price:", parseInt(price));
-      const tx = await relist(parseInt(bookIndex), parseInt(price));
+      const tx = await relist(parseInt(bookIndex), price);
       tx.wait();
       toast.success("book relisted succesfully");
     } catch (error) {

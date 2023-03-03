@@ -4,7 +4,6 @@ import './index.css';
 import App from './App';
 import { publicProvider } from 'wagmi/providers/public'
 import { darkTheme } from "@rainbow-me/rainbowkit";
-import { ConnectKitProvider, getDefaultClient } from "connectkit";
 import {
   WagmiConfig,
   createClient,

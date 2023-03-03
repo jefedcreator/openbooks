@@ -51,7 +51,6 @@ const getNfts = async () => {
 try {
     const nfts = [];
     const nftsLength = await openbooks.totalSupply();
-    console.log("total supply", nftsLength);
     for (let i = 0; i < Number(nftsLength); i++) {
         const nft = new Promise(async (resolve) => {
             const res = await openbooks.tokenURI(i);
@@ -81,7 +80,6 @@ const fetchNftMeta = async (ipfsUrl) => {
 try {
     if (!ipfsUrl) return null;
     const meta = await axios.get(ipfsUrl);
-    console.log("meta",meta);
     return meta;
 } catch (e) {
     console.log({e});
