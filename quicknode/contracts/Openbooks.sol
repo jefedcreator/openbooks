@@ -6,6 +6,7 @@ import "@openzeppelin/contracts/token/ERC721/ERC721.sol";
 import "@openzeppelin/contracts/token/ERC721/extensions/ERC721URIStorage.sol";
 import "@openzeppelin/contracts/utils/Counters.sol";
 import "@openzeppelin/contracts/token/ERC721/extensions/ERC721Enumerable.sol";
+import "@openzeppelin/contracts/token/ERC721/IERC721Receiver.sol";
 
 contract openBooks is ERC721, ERC721URIStorage,ERC721Enumerable{
 
@@ -19,9 +20,14 @@ contract openBooks is ERC721, ERC721URIStorage,ERC721Enumerable{
         uint price;
         address owner;
         bool sold;
+        string book;
     }
 
     mapping(uint => bookDetails) public book;
+
+    // mapping(uint => bookDetails) public bookS;
+
+    mapping (address => uint) public profit;
 
     constructor() ERC721("openBooks", "OB") {}
 
@@ -54,7 +60,7 @@ contract openBooks is ERC721, ERC721URIStorage,ERC721Enumerable{
         return super.supportsInterface(interfaceId);
     }
 
-    function mintBook(string memory _bookCover, uint _price) public payable{
+    function mintBook(string memory _bookCover, string memory _book, uint _price) public payable{
         require(msg.value == payment, "insufficient payment");
         uint256 tokenId = _tokenIdCounter.current();
         _tokenIdCounter.increment();
@@ -63,13 +69,15 @@ contract openBooks is ERC721, ERC721URIStorage,ERC721Enumerable{
         bookDetails storage bookdetail = book[tokenId];
         bookdetail.price = _price;
         bookdetail.owner = msg.sender;
+        bookdetail.book = _book;
     }
 
     function purchaseBook(uint _bookId) public payable{
         require(msg.value == book[_bookId].price, "insufficient payment");
         require(book[_bookId].owner != msg.sender, "owner cannot purchase book");
         require(book[_bookId].sold == false, "book not up for sale");
-        safeTransferFrom(book[_bookId].owner, msg.sender, _bookId);
+        profit[book[_bookId].owner] += msg.value;
+        _transfer(ownerOf(_bookId),msg.sender, _bookId);
         bookDetails storage bookdetail = book[_bookId];
         bookdetail.owner = msg.sender;
         bookdetail.sold = true;
@@ -82,5 +90,14 @@ contract openBooks is ERC721, ERC721URIStorage,ERC721Enumerable{
         bookdetail.sold = false;
     }
 
+    function getBook(uint _bookId) public view returns(string memory){
+        require(book[_bookId].owner == msg.sender, "only owner can get book");
+        return book[_bookId].book;
+    }
 
+    function redeem() public {
+        (bool success,) = msg.sender.call{value:profit[msg.sender]}("");
+        require(success);
+        profit[msg.sender] = 0;
+    }
 }

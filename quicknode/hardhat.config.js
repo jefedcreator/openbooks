@@ -11,6 +11,11 @@ module.exports = {
       url: QUICKNODE_HTTP_URL,
       accounts: [PRIVATE_KEY],
     },
+    hyperspace: {
+      chainId: 3141,
+      url: "https://api.hyperspace.node.glif.io/rpc/v1",
+      accounts: [PRIVATE_KEY],
+  },
   },
   etherscan: {
     apiKey: process.env.ETHERSCAN_API_KEY,
