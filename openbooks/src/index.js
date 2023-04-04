@@ -10,7 +10,7 @@ import {
   configureChains,
 } from 'wagmi'
 // import { Chain, WagmiConfig } from 'wagmi/dist';
-import { filecoinHyperspace } from '@wagmi/chains';
+import { polygonMumbai } from '@wagmi/chains';
 import { BrowserRouter } from 'react-router-dom';
 import '@rainbow-me/rainbowkit/styles.css';
 import {
@@ -25,7 +25,7 @@ import { alchemyProvider } from 'wagmi/providers/alchemy';
 
 
 const { chains, provider } = configureChains(
-  [filecoinHyperspace ],
+  [ polygonMumbai ],
   [
     alchemyProvider({ apiKey: process.env.ALCHEMY_ID }),
     publicProvider()

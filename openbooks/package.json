@@ -3,6 +3,7 @@
   "version": "0.1.0",
   "private": true,
   "dependencies": {
+    "@pdftron/webviewer": "^8.0.0",
     "@rainbow-me/rainbowkit": "^0.11.0",
     "@testing-library/jest-dom": "^5.16.5",
     "@testing-library/react": "^13.4.0",
@@ -12,8 +13,10 @@
     "dotenv": "^16.0.3",
     "ethers": "^5.7.2",
     "ipfs-http-client": "^59.0.0",
+    "path-browserify": "^1.0.1",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
+    "react-pdf-thumbnail": "^0.1.0",
     "react-router-dom": "^6.4.1",
     "react-scripts": "5.0.1",
     "react-toastify": "^9.1.1",
@@ -21,9 +24,10 @@
     "web-vitals": "^2.1.4"
   },
   "scripts": {
-    "start": "react-scripts start",
-    "build": "react-scripts build",
-    "test": "react-scripts test",
+    "move-static": "cp -a ./node_modules/@pdftron/webviewer/public/. ./dist/public/webviewer",
+    "start": "react-app-rewired start",
+    "build": "react-app-rewired build",
+    "test": "react-app-rewired test",
     "eject": "react-scripts eject"
   },
   "eslintConfig": {
@@ -45,6 +49,8 @@
     ]
   },
   "devDependencies": {
+    "copy-webpack-plugin": "^11.0.0",
+    "react-app-rewired": "^2.2.1",
     "tailwindcss": "^3.2.4"
   }
 }

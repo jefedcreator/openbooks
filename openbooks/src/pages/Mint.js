@@ -6,7 +6,13 @@ import { ethers } from 'ethers';
 import { useState, useRef } from 'react';
 import { useAccount, useSigner } from 'wagmi'
 import { ToastContainer, toast } from 'react-toastify';
+import WebViewer from '@pdftron/webviewer'
+import PDFThumbnail from '../components/PDFRasterizer';
+// import { Document, Page } from 'react-pdf/dist/esm/entry.webpack';
+// import pdfThumbnail from 'pdf-thumbnail';
 import 'react-toastify/dist/ReactToastify.css';
+
+
 
 const Mint = () => {
     const { address, isConnected } = useAccount()
@@ -14,15 +20,23 @@ const Mint = () => {
     const [cover, setCover] = useState(null)
     const [book, setBook] = useState("")
     const[price, setPrice] = useState(null)
-    // const[details, setDetails] = useState({
-    //     name:"",
-    //     description:"",
-    //     image:""
-    // })
+    const [previewSrc, setPreviewSrc] = useState(null);
+    const [thumb, setThumb] = useState(null)
+    const[genre,setGenre] = useState(null)
+    const viewerRef = useRef(null);
+
+    const [bookDetail, setBookDetail] = useState({
+        cover:"",
+        book:"",
+        price:"",
+        thumbnail:"",
+        genre:"",
+        description:""
+    })
+
     const[name, setName] = useState("");
     const[description, setDescription] = useState("");
     const[spinner, setSpinner] = useState(false)
-    // const[uri, setUri] = useState("")
 
     const nameref = useRef(null);
     const priceref = useRef(null);
@@ -54,34 +68,36 @@ const Mint = () => {
       ipfs = undefined;
     }
 
-    // const onSubmitHandler = async () => {
-    //     try {
-    //         let data = JSON.stringify({
-    //             name: name,
-    //             description: description,
-    //             image: cover,
-    //             // owner: address,
-    //         });
-
-    //         setSpinner(true)
-    //         const getUri = await (ipfs).add(data);
-
-    //         setUri("ipfs://" + getUri.path)
-
-    //         toast.success("Book Uploaded to ipfs succesfully")
-    //     } catch (error) {
-    //         console.log(error);
-    //         toast.error("error uploading to ipfs")
-    //     } finally {
-    //         setSpinner(false)
-    //     }
-    //     // files.reset();
-    //     };
-
-
     const isFormFilled = () => {
         return !(cover && book && price);
     }
+
+    const initializeWebViewer = async (file) => {
+        if (!file) return;
+  
+        const instance = await WebViewer(
+          {
+            path: '/webviewer',
+            disabledElements: 
+            ['header', 'toolsHeader', 'viewControlsElement','documentContainer','textPopup'],
+          },
+          viewerRef.current
+        );
+  
+          const { createDocument } = instance.Core;
+          // const doc = documentViewer.getDocument();
+          instance.UI.disableElements(['header', 'toolsHeader', 'viewControlsElement','documentContainer','textPopup','viewControlsOverlay',],)
+          const pageNumber = 2;
+
+  
+          const doc = await createDocument(file, {extension:"pdf"})
+          doc.loadCanvasAsync({
+              pageNumber,
+              drawComplete: (thumbnail) =>{
+                  setThumb(thumbnail)
+              }
+          })  
+    };
 
     const onChangeCoverHandler = async (e) =>{
         try {
@@ -93,6 +109,15 @@ const Mint = () => {
             }
             toast.success("book cover selected succesfully")
             const file = files[0];
+            // const imageFile = e.target.files[0];
+            if (!file) return;
+            // setFile(file);
+        
+            const reader = new FileReader();
+            reader.onload = (event) => {
+              setPreviewSrc(event.target.result);
+            };
+            reader.readAsDataURL(file);
             // upload files
             const result = await (ipfs).add(file);
         
@@ -112,15 +137,20 @@ const Mint = () => {
         try {
             const form = e.target;
             const files = (form).files;          
+            const file = files[0];
             if (!files || files.length === 0) {
-            alert("No files selected");
-            return toast.error("error selecting file")
+                return toast.error("error selecting file")
             }
             toast.success("book file selected succesfully")
-            const file = files[0];
-            // upload files
+            await initializeWebViewer(file)
             const result = await (ipfs).add(file);
-        
+            setBookDetail((book) => {
+                return {
+                  ...book,
+                  book: "failed"
+                };
+            });
+              
             setBook("https://jefedcreator.infura-ipfs.io/ipfs/" + result.path)
         } catch (error) {
             console.log({error});
@@ -128,7 +158,7 @@ const Mint = () => {
         }
     }
     
-    // console.log("uri",uri);
+    // console.log("uri",thumbnailSrc);
 
     const mintBook = async(e) => {
         e.preventDefault()        
@@ -181,26 +211,57 @@ const Mint = () => {
                 <h4 className="text-2xl font-bold dark:text-white">Mint book</h4>
                 <form onSubmit={mintBook}>
                 <div className='flex justify-between'>
-                    <div className="flex items-center justify-center w-[48%]">
-                        <label htmlFor="dropzone-pic" className="flex flex-col items-center justify-center w-full h-64 border-2 border-gray-300 border-dashed rounded-lg cursor-pointer bg-gray-50 dark:hover:bg-bray-800 dark:bg-gray-700 hover:bg-gray-100 dark:border-gray-600 dark:hover:border-gray-500 dark:hover:bg-gray-600">
-                            <div className="flex flex-col items-center justify-center pt-5 pb-6">
-                                <svg aria-hidden="true" className="w-10 h-10 mb-3 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12"></path></svg>
-                                <p className="mb-2 text-sm text-gray-500 dark:text-gray-400"><span className="font-semibold">Click to upload book cover</span> or drag and drop</p>
-                                <p className="text-xs text-gray-500 dark:text-gray-400">JPEG or PNG</p>
-                            </div>
-                            <input id="dropzone-pic" accept="image/png, image/jpeg" type="file" className="hidden" onChange={onChangeCoverHandler}/>
-                        </label>
-                    </div>
-                    <div className="flex items-center justify-center w-[48%]">
-                        <label htmlFor="dropzone-file" className="flex flex-col items-center justify-center w-full h-64 border-2 border-gray-300 border-dashed rounded-lg cursor-pointer bg-gray-50 dark:hover:bg-bray-800 dark:bg-gray-700 hover:bg-gray-100 dark:border-gray-600 dark:hover:border-gray-500 dark:hover:bg-gray-600">
-                            <div className="flex flex-col items-center justify-center pt-5 pb-6">
-                                <svg aria-hidden="true" className="w-10 h-10 mb-3 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12"></path></svg>
-                                <p className="mb-2 text-sm text-gray-500 dark:text-gray-400"><span className="font-semibold">Click to upload book file</span> or drag and drop</p>
-                                <p className="text-xs text-gray-500 dark:text-gray-400">PDF</p>
-                            </div>
-                            <input id="dropzone-file" type="file" accept="application/pdf" className="hidden" onChange={onChangeBookHandler}/>
-                        </label>
-                    </div>
+                    {
+                        previewSrc ?  
+                        <div className="flex items-center justify-center w-[48%]">
+                            <img src={previewSrc} alt="Image preview" className="flex items-center justify-center w-full object-contain h-64" />
+                        </div>
+                        :
+                        <div className="flex items-center justify-center w-[48%]">
+                            <label htmlFor="dropzone-pic" className="flex flex-col items-center justify-center w-full h-64 border-2 border-gray-300 border-dashed rounded-lg cursor-pointer bg-gray-50 dark:hover:bg-bray-800 dark:bg-gray-700 hover:bg-gray-100 dark:border-gray-600 dark:hover:border-gray-500 dark:hover:bg-gray-600">
+                                <div className="flex flex-col items-center justify-center pt-5 pb-6">
+                                    <svg aria-hidden="true" className="w-10 h-10 mb-3 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12"></path></svg>
+                                    <p className="mb-2 text-sm text-gray-500 dark:text-gray-400"><span className="font-semibold">Click to upload book cover</span> or drag and drop</p>
+                                    <p className="text-xs text-gray-500 dark:text-gray-400">JPEG or PNG</p>
+                                </div>
+                                <input id="dropzone-pic" accept="image/png, image/jpeg" type="file" className="hidden" onChange={onChangeCoverHandler}/>
+                            </label>
+                        </div>
+                    }
+                    {/* {
+                        thumbnailSrc ? 
+                        <div className="flex items-center justify-center w-[48%]">
+                            <img src={thumbnailSrc} alt="Image preview" className="flex items-center justify-center w-full object-contain h-64" />
+                        </div>
+                        :
+                        <div className="flex items-center justify-center w-[48%]">
+                            <label htmlFor="dropzone-file" className="flex flex-col items-center justify-center w-full h-64 border-2 border-gray-300 border-dashed rounded-lg cursor-pointer bg-gray-50 dark:hover:bg-bray-800 dark:bg-gray-700 hover:bg-gray-100 dark:border-gray-600 dark:hover:border-gray-500 dark:hover:bg-gray-600">
+                                <div className="flex flex-col items-center justify-center pt-5 pb-6">
+                                    <svg aria-hidden="true" className="w-10 h-10 mb-3 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12"></path></svg>
+                                    <p className="mb-2 text-sm text-gray-500 dark:text-gray-400"><span className="font-semibold">Click to upload book file</span> or drag and drop</p>
+                                    <p className="text-xs text-gray-500 dark:text-gray-400">PDF</p>
+                                </div>
+                                <input id="dropzone-file" type="file" accept="application/pdf" className="hidden" onChange={onChangeBookHandler}/>
+                            </label>
+                        </div>
+                    } */}
+                    {
+                        thumb ?
+                        <div className="flex items-center justify-center w-[48%]">
+                            <img src={thumb.toDataURL()} alt="PDF thumbnail" className='w-full h-64 object-cover'/>
+                        </div>
+                        :
+                        <div className="flex items-center justify-center w-[48%]" ref={viewerRef}>
+                            <label htmlFor="dropzone-file" className="flex flex-col items-center justify-center w-full h-64 border-2 border-gray-300 border-dashed rounded-lg cursor-pointer bg-gray-50 dark:hover:bg-bray-800 dark:bg-gray-700 hover:bg-gray-100 dark:border-gray-600 dark:hover:border-gray-500 dark:hover:bg-gray-600">
+                                <div className="flex flex-col items-center justify-center pt-5 pb-6">
+                                    <svg aria-hidden="true" className="w-10 h-10 mb-3 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12"></path></svg>
+                                    <p className="mb-2 text-sm text-gray-500 dark:text-gray-400"><span className="font-semibold">Click to upload book file</span> or drag and drop</p>
+                                    <p className="text-xs text-gray-500 dark:text-gray-400">PDF</p>
+                                </div>
+                                <input id="dropzone-file" type="file" accept="application/pdf" className="hidden" onChange={onChangeBookHandler}/>
+                            </label>
+                        </div>
+                    }
                 </div>
                     {/* <input type="file" name="file" onChange={onSubmitHandler}/> */}
                     {/* <input type="number" name="price" onSubmit={(e)=> setPrice(e.target.value)}/> */}
@@ -217,6 +278,11 @@ const Mint = () => {
 
                     <label htmlFor="description" className="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Book description</label>
                     <input ref={descref} type="text" id="description" name='description' className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500" placeholder="description" required onChange={(e) => setDescription(e.target.value)}/>
+                </div>
+                <div>
+
+                    <label htmlFor="genre" className="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Book Genre</label>
+                    <input ref={descref} type="text" id="genre" name='genre' className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500" placeholder="genre" required onChange={(e) => setDescription(e.target.value)}/>
                 </div>
                 </div>
                 {                    
