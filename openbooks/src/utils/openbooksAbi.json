@@ -18,12 +18,22 @@
 			},
 			{
 				"internalType": "string",
+				"name": "collectionBook",
+				"type": "string"
+			},
+			{
+				"internalType": "string",
 				"name": "genre",
 				"type": "string"
 			},
 			{
 				"internalType": "uint256",
 				"name": "collectionVolume",
+				"type": "uint256"
+			},
+			{
+				"internalType": "uint256",
+				"name": "price",
 				"type": "uint256"
 			}
 		],
@@ -35,7 +45,7 @@
 				"type": "bool"
 			}
 		],
-		"stateMutability": "nonpayable",
+		"stateMutability": "payable",
 		"type": "function"
 	},
 	{
@@ -70,6 +80,12 @@
 				"internalType": "string",
 				"name": "genre",
 				"type": "string"
+			},
+			{
+				"indexed": false,
+				"internalType": "uint256",
+				"name": "price",
+				"type": "uint256"
 			}
 		],
 		"name": "createdCollection",
@@ -89,9 +105,14 @@
 				"internalType": "bool",
 				"name": "",
 				"type": "bool"
+			},
+			{
+				"internalType": "address",
+				"name": "",
+				"type": "address"
 			}
 		],
-		"stateMutability": "nonpayable",
+		"stateMutability": "payable",
 		"type": "function"
 	},
 	{
@@ -114,10 +135,23 @@
 				"internalType": "string",
 				"name": "collectionUri",
 				"type": "string"
+			},
+			{
+				"indexed": false,
+				"internalType": "uint256",
+				"name": "balance",
+				"type": "uint256"
 			}
 		],
 		"name": "mintedCollection",
 		"type": "event"
+	},
+	{
+		"inputs": [],
+		"name": "redeem",
+		"outputs": [],
+		"stateMutability": "nonpayable",
+		"type": "function"
 	},
 	{
 		"inputs": [
@@ -160,12 +194,50 @@
 	{
 		"inputs": [
 			{
+				"internalType": "address",
+				"name": "",
+				"type": "address"
+			}
+		],
+		"name": "profit",
+		"outputs": [
+			{
+				"internalType": "uint256",
+				"name": "",
+				"type": "uint256"
+			}
+		],
+		"stateMutability": "view",
+		"type": "function"
+	},
+	{
+		"inputs": [
+			{
 				"internalType": "contract LibreVerse",
 				"name": "collection",
 				"type": "address"
 			}
 		],
 		"name": "viewCollection",
+		"outputs": [
+			{
+				"internalType": "string",
+				"name": "",
+				"type": "string"
+			}
+		],
+		"stateMutability": "view",
+		"type": "function"
+	},
+	{
+		"inputs": [
+			{
+				"internalType": "contract LibreVerse",
+				"name": "collection",
+				"type": "address"
+			}
+		],
+		"name": "viewCollectionBook",
 		"outputs": [
 			{
 				"internalType": "string",
