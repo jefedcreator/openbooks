@@ -1,19 +1,20 @@
 {
-  "short_name": "React App",
-  "name": "Create React App Sample",
+  "short_name": "LibreVerse",
+  "name": "LibreVerse",
+  "description": "Empower Your Words: Unleash NFTs, Connect with Fans, and Ignite Your Audience!",
   "icons": [
     {
-      "src": "favicon.ico",
+      "src": "https://res.cloudinary.com/hemi/image/upload/v1680915771/libverselogo_wjvoeb.png",
       "sizes": "64x64 32x32 24x24 16x16",
       "type": "image/x-icon"
     },
     {
-      "src": "logo192.png",
+      "src": "https://res.cloudinary.com/hemi/image/upload/v1680915771/libverselogo_wjvoeb.png",
       "type": "image/png",
       "sizes": "192x192"
     },
     {
-      "src": "logo512.png",
+      "src": "https://res.cloudinary.com/hemi/image/upload/v1680915771/libverselogo_wjvoeb.png",
       "type": "image/png",
       "sizes": "512x512"
     }

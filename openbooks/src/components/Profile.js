@@ -7,21 +7,24 @@ function Profile() {
     return (
     <div className='flex flex-row w-full justify-between items-center py-2'>  
         <div className='w-1/2 flex flex-row'>
-            <h3>
+            <h3 className='hidden md:block'>
                 Open books
             </h3>
-            <ul className='w-9/12 flex flex-row justify-evenly'>
+            <ul className='md:w-9/12 flex flex-col md:flex-row justify-evenly'>
                 <li>
                     <Link to="/">Home</Link>
                 </li>
                 <li>
-                    <Link to="/mint">Mint</Link>
+                    <Link to="/create">Create</Link>
                 </li>
                 <li>
-                    <Link to="/library">My Library</Link>
+                    <Link to="/library">Library</Link>
                 </li>
                 <li>
                     <Link to="/marketplace">Marketplace</Link>
+                </li>
+                <li>
+                    <Link to="/collection">Collection</Link>
                 </li>
             </ul>
         </div>

@@ -11,7 +11,6 @@ import { BigNumber } from "bignumber.js";
 // import { BigNumber } from "@ethersproject/bignumber";
 
 const Library = ({ myNfts, spinner, profit }) => {
-  console.log("myNfts",myNfts);
   const [spin, setSpinner] = useState(false);
   const [modal, setModal] = useState(false);
   const [price, setPrice] = useState(null);
@@ -76,19 +75,6 @@ const Library = ({ myNfts, spinner, profit }) => {
     });
   };
 
-  const claimHandler = async () => {
-    try {
-      setSpinner(true);
-      const tx = await redeem();
-      tx.wait();
-      toast.success("profit redeemed succesfully");
-    } catch (error) {
-      console.log("error", error.message);
-    } finally {
-      setSpinner(false);
-    }
-  };
-
   return (
     <div className="flex flex-col justify-between h-3/4 relative w-full">
       {/* {modal && (
@@ -101,26 +87,18 @@ const Library = ({ myNfts, spinner, profit }) => {
       )} */}
       {spin && <Spinner />}
       <ToastContainer />
-      <div className="flex justify-between">
-        <h3 className="text-3xl font-bold dark:text-white py-3">Library</h3>
-        <button
-          className="text-white bg-gradient-to-r from-blue-500 via-blue-600 to-blue-700 hover:bg-gradient-to-br focus:ring-4 focus:outline-none focus:ring-blue-300 dark:focus:ring-blue-800 font-medium rounded-lg text-sm px-5 py-2.5 text-center mr-2 mb-2"
-          onClick={claimHandler}
-        >
-          {profit
-            ? `Claim ${ethers.utils.formatEther(new BigNumber(profit).toString())} MATIC`
-            : `0 MATIC`}
-        </button>
-      </div>
-      <div className='h-full flex flex-row flex-wrap gap-x-10'>
+      <h3 className="text-3xl font-bold dark:text-white py-3">Library</h3>
+      <div 
+        className="h-full flex flex-row flex-wrap md:gap-x-10 justify-between py-5 md:py-0"
+      >
         {myNfts.map((book, i) => {
           return (
             <div
-              className="w-60 bg-white border border-gray-200 rounded-lg shadow-md dark:bg-gray-900 dark:border-gray-700 mt-3"
-              key={i}
+            className="w-[48%] h-[50%] md:h-auto md:w-60 bg-white border border-gray-200 rounded-lg shadow-md dark:bg-gray-900 dark:border-gray-700 mt-3 flex flex-col justify-between"
+            key={i}
             >
               <img
-                className="w-full h-40 object-cover rounded-t-lg"
+                className="w-full h-40 object-cover rounded-t-lg transform hover:scale-110 transition duration-300 ease-in-out"
                 src={book?.image}
                 alt={book?.description}
               />
@@ -132,7 +110,7 @@ const Library = ({ myNfts, spinner, profit }) => {
                   {book?.description}
                 </p>
                 <p className="mb-1 text-xs font-normal text-gray-700 dark:text-gray-400 font-book">
-                 copies: {book?.balance}
+                  copies: {book?.balance}
                 </p>
                 <div className="w-full flex justify-between">
                   {/* <a

@@ -5,6 +5,7 @@ import { InjectedConnector } from 'wagmi/connectors/injected'
 // import { Router,Route, Routes } from "react-router-dom";
 import Home from './pages/Home';
 import Mint from './pages/Mint';
+import Collection from './pages/Collection';
 import Profile from './components/Profile';
 import { createRoot } from "react-dom/client";
 import { useContract, useProvider } from 'wagmi'
@@ -25,7 +26,6 @@ import Library from './pages/Library';
 function App() {
   const { data: signer, isError, isLoading } = useSigner()
   const[spinner, setSpinner] = useState(false)
-  const[nftSupply, setNftSupply] = useState(null)
   const[allLibreVerse, setAllLibreVerse] = useState([])
   const[mintedLibreVerse, setMintedLibreVerse] = useState([])
   const [profit, setProfit] = useState(null)
@@ -82,22 +82,11 @@ const fetchNftMeta = async (ipfsUrl) => {
 try {
     if (!ipfsUrl) return null;
     const meta = await axios.get(ipfsUrl);
-    console.log("meta image", meta.data.image);
     return meta;
 } catch (e) {
     console.log({e});
 }
 };
-
-// const supply = async() => {
-//     try {
-//         const supply = await openbooks._tokenIdCounter()
-//         console.log("supply is", supply);
-//         return supply
-//     } catch (e) {
-//         console.log({e});
-//     }
-//   };
 
 const getProfit = () =>{
   return new Promise((resolve, reject) => {
@@ -113,31 +102,10 @@ const getProfitHandler = async() =>{
   setProfit(parseInt(balance))
 }
 
-// const getAssets = async () => {
-//     try {
-//       setSpinner(true);
-//       const allNfts = await getNfts();
-//       if (!allNfts) return;
-//       setNftDetails(allNfts);
-//     } catch (error) {
-//       console.log({ error });
-//     } finally {
-//       setSpinner(false);
-//     }
-// };
-
-const fetchAllCollections = async () => {
-
-};
-
-fetchAllCollections();
-
-
 const init = async () => {
   try {
     setSpinner(true);
     const allCollections = await libreVerse.queryFilter(libreVerse.filters.createdCollection());
-    console.log("allCollections",allCollections);
     const fetchCollectionMetadata = async (data) => {
       const ipfsRes = `https://ipfs.io/ipfs/${data.args[4].slice(7)}`;
       const metadata = await fetchNftMeta(ipfsRes);
@@ -153,11 +121,9 @@ const init = async () => {
     };
   
     const collectionsPromises = allCollections.map(fetchCollectionMetadata);
-    console.log("collectionsPromises",collectionsPromises);
     const collections = await Promise.all(collectionsPromises);
     setAllLibreVerse(collections);
-    console.log("collections",collections);
-    libreVerse.on("createdCollection", async(collection, collectionName, creator, genre, uri) => {
+    libreVerse.on("createdCollection", async(collection, collectionName, creator, genre, uri,price) => {
       const ipfsRes = `https://ipfs.io/ipfs/${uri.slice(7)}`;
       const metadata = await fetchNftMeta(ipfsRes);
       const newEscrow = {
@@ -166,13 +132,14 @@ const init = async () => {
         creator,
         genre,
         image:metadata.data.image,
+        description: metadata.data.description,
+        price:price.toString()
       };
   
       setAllLibreVerse(prev => [newEscrow, ...prev]);
     });
 
     const mintedCollections = await libreVerse.queryFilter(libreVerse.filters.mintedCollection());
-    console.log("mintedCollections",mintedCollections);
     const fetchMintedMetadata = async (data) => {
       const ipfsRes = `https://ipfs.io/ipfs/${data.args[2].slice(7)}`;
       const metadata = await fetchNftMeta(ipfsRes);
@@ -226,24 +193,43 @@ useEffect(() => {
 }, [address])
 
 // const ntfForSale = nftDetails.filter(book => !book.sale)
-const myNfts = mintedLibreVerse.filter(collection => collection.collector == address)
+// const myNfts = mintedLibreVerse.filter(collection => collection.collector == address)
+const myCollection = allLibreVerse.filter(collection => collection.creator == address)
+const groupedByCollection = mintedLibreVerse.reduce((acc, obj) => {
+  if (!acc[obj.collection]) {
+    acc[obj.collection] = [];
+  }
+  acc[obj.collection].push(obj);
+  return acc;
+}, {});
+
+// console.log("groupedByCollection",groupedByCollection)
+
+// Find the object with the highest 'balance' attribute in each group
+const highestBalancePerCollection = Object.values(groupedByCollection).map(group => {
+  return group.reduce((max, obj) => (obj.balance > max.balance ? obj : max));
+});
+
+const myNfts = highestBalancePerCollection.filter(nft => nft.collector === address);
 
   return (
     <div className='w-full px-10 h-screen'>
       <Profile/>
         <Routes>
           <Route exact path="/" element={<Home />} />
-          <Route path="/mint" element={<Mint />} />
+          <Route path="/create" element={<Mint />} />
           <Route path="/library" element={<Library
-            // openbooks={openbooks}
             myNfts={myNfts}
             spinner={spinner}
-            profit={profit}
           />} />
           <Route path="/marketplace" element={<Marketplace 
             allLibreVerse={allLibreVerse}
-            // ntfForSale={ntfForSale}
             spinner={spinner}
+          />} />
+          <Route path="/collection" element={<Collection 
+            myCollection={myCollection}
+            spinner={spinner}
+            profit={profit}
           />} />
         </Routes>
     </div>
