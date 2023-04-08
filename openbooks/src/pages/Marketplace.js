@@ -1,6 +1,4 @@
-import React, { useEffect, useState, useCallback } from "react";
-import Spinner from "../components/Spinner";
-// import { publicProvider } from 'wagmi/dist/providers/public'
+import React from "react";
 import { ToastContainer } from "react-toastify";
 import LibreVerse from "../components/LibreVerse";
 import "react-toastify/dist/ReactToastify.css";

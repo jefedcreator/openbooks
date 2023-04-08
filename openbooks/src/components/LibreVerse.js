@@ -36,7 +36,19 @@ const LibreVerse = ({
       });
       tx.wait().then(() => {
         getCopies(collection).then((copy) => {
-          toast.success(`minted 1 copy of ${name} succesfully`);
+          toast.success(
+            <>
+              {`minted 1 copy of ${name} succesfully`}
+              <a
+                href={`https://testnets.opensea.io/assets/mumbai/${collection}`}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="text-blue-500 underline"
+              >
+                View on opensea
+              </a>
+            </>
+          );
           setCopy(copy);
         });
       });
@@ -55,9 +67,7 @@ const LibreVerse = ({
     loadCopy();
   }, [libreVerse]);
   return (
-    <div 
-    className="w-[48%] h-[50%] md:h-auto md:w-60 bg-white border border-gray-200 rounded-lg shadow-md dark:bg-gray-900 dark:border-gray-700 mt-3 flex flex-col justify-between"
-    >
+    <div className="w-[48%] h-[50%] md:h-auto md:w-60 bg-white border border-gray-200 rounded-lg shadow-md dark:bg-gray-900 dark:border-gray-700 mt-3 flex flex-col justify-between">
       <img
         className="w-full h-40 object-cover rounded-t-lg transform hover:scale-110 transition duration-300 ease-in-out"
         src={image}

@@ -76,7 +76,7 @@ const Library = ({ myNfts, spinner, profit }) => {
   };
 
   return (
-    <div className="flex flex-col justify-between h-3/4 relative w-full">
+    <div className="flex flex-col justify-between h-auto">
       {/* {modal && (
         <Modal
           setModal={setModal}
