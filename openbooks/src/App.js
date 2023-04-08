@@ -169,7 +169,7 @@ const init = async () => {
         name: metadata.data.name
       };
   
-      setMintedLibreVerse(prev => [newMintedCollection, ...prev]);
+      setMintedLibreVerse(prev => [...prev,newMintedCollection]);
     });
 
 
