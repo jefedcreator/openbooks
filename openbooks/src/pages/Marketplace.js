@@ -28,7 +28,7 @@ const Marketplace = ({ allLibreVerse, spinner }) => {
         <h1>Loading...</h1>
       ) : (
         <div 
-        className="h-full flex flex-row flex-wrap md:gap-x-10 justify-between py-5 md:py-0"
+        className="h-full flex flex-row flex-wrap md:gap-x-10 justify-between md:justify-start py-5 md:py-0"
         >
           {allLibreVerse.map((book, i) => {
             return <LibreVerse {...book} key={i} index={i} />;

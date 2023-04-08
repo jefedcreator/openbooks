@@ -49,7 +49,7 @@ const Collection = ({ myCollection, profit }) => {
         <h1>Loading...</h1>
       ) : (
         <div 
-            className="h-full flex flex-row flex-wrap md:gap-x-10 justify-between py-5 md:py-0"
+        className="h-full flex flex-row flex-wrap md:gap-x-10 justify-between md:justify-start py-5 md:py-0"
         >
           {myCollection.map((collection,i) => (
             <div 

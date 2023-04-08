@@ -89,8 +89,8 @@ const Library = ({ myNfts, spinner, profit }) => {
       <ToastContainer />
       <h3 className="text-3xl font-bold dark:text-white py-3">Library</h3>
       <div 
-        className="h-full flex flex-row flex-wrap md:gap-x-10 justify-between py-5 md:py-0"
-      >
+        className="h-full flex flex-row flex-wrap md:gap-x-10 justify-between md:justify-start py-5 md:py-0"
+        >
         {myNfts.map((book, i) => {
           return (
             <div
