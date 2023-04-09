@@ -23,22 +23,23 @@ const LibreVerse = ({
 
   const libreVerse = new ethers.Contract(value.address, openbooksAbi, signer);
 
-  const getCopies = async (collection) => {
+  const getCopies = async () => {
     const result = await libreVerse.collectionRemains(collection);
     return result;
   };
 
-  const mintHandler = async (collection, bookPrice, name) => {
+  const mintHandler = async () => {
     try {
       setSpinner(true);
       const tx = await libreVerse.mintCollection(collection, {
-        value: bookPrice,
+        value: price,
       });
       tx.wait().then(() => {
-        getCopies(collection).then((copy) => {
+        getCopies().then((copy) => {
+          setSpinner(false);
           toast.success(
             <>
-              {`minted 1 copy of ${name} succesfully`}
+              {`minted 1 copy of ${collectionName} succesfully`}
               <a
                 href={`https://testnets.opensea.io/assets/mumbai/${collection}`}
                 target="_blank"
@@ -54,7 +55,6 @@ const LibreVerse = ({
       });
     } catch (error) {
       toast.error(error.message);
-    } finally {
       setSpinner(false);
     }
   };
@@ -91,7 +91,7 @@ const LibreVerse = ({
         </p>
         <button
           className="inline-flex items-center px-3 py-2 text-sm font-medium text-center text-white bg-blue-700 rounded-lg hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800"
-          onClick={() => mintHandler(collection, price, collectionName)}
+          onClick={mintHandler}
         >
           {spin ? `minting` : `mint`}
         </button>

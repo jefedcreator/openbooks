@@ -4,13 +4,12 @@ import openbooksAbi from "../utils/openbooksAbi.json";
 import value from "../utils/openbooksAddress.json";
 import { ethers } from "ethers";
 import { useState, useRef } from "react";
-import { useAccount, useSigner } from "wagmi";
+import { useSigner } from "wagmi";
 import { ToastContainer, toast } from "react-toastify";
 import WebViewer from "@pdftron/webviewer";
 import "react-toastify/dist/ReactToastify.css";
 
 const Mint = () => {
-  const { address, isConnected } = useAccount();
   const { data: signer } = useSigner();
   const viewerRef = useRef(null);
 
@@ -29,7 +28,13 @@ const Mint = () => {
 
   const [spinner, setSpinner] = useState(false);
 
-  const authorization = "Basic " + btoa(process.env.REACT_APP_PROJECT_ID + ":" + process.env.REACT_APP_PROJECT_SECRET);
+  const authorization =
+    "Basic " +
+    btoa(
+      process.env.REACT_APP_PROJECT_ID +
+        ":" +
+        process.env.REACT_APP_PROJECT_SECRET
+    );
 
   const libreVerse = new ethers.Contract(value.address, openbooksAbi, signer);
 
@@ -251,7 +256,9 @@ const Mint = () => {
       <ToastContainer />
       {ipfs && (
         <>
-          <h4 className="text-2xl font-bold dark:text-white p-y-10">Create collection</h4>
+          <h4 className="text-2xl font-bold dark:text-white p-y-10">
+            Create collection
+          </h4>
           <form onSubmit={mintBook}>
             <div className="flex flex-col md:flex-row justify-between">
               {bookDetail.cover ? (
