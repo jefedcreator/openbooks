@@ -1,15 +1,11 @@
-import React from "react";
+import React, { useContext } from "react";
 import { toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
-import openbooksAbi from "../utils/openbooksAbi.json";
-import value from "../utils/openbooksAddress.json";
-import { ethers } from "ethers";
-import { useSigner } from "wagmi";
+import { LibreVerseContext } from "../utils/libreVerseContext";
 
-const MyBooks = ({ image, description, name, balance, collection }) => {
-  const { data: signer } = useSigner();
+const MyBooks = ({ image, description, name, balance, collection, libreVerse}) => {
 
-  const libreVerse = new ethers.Contract(value.address, openbooksAbi, signer);
+  // const {libreVerse} = useContext(LibreVerseContext)
 
   const getBook = () => {
     return new Promise((resolve, reject) => {

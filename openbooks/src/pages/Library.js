@@ -4,7 +4,7 @@ import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import MyBooks from "../components/MyBooks";
 
-const Library = ({ mintedLibreVerse, spinner,address }) => {
+const Library = ({ mintedLibreVerse, spinner, address, libreVerse}) => {
   const [spin, setSpinner] = useState(false);
   const [myNfts, setMyNfts] = useState([]);
   useEffect(() => {
@@ -16,24 +16,30 @@ const Library = ({ mintedLibreVerse, spinner,address }) => {
         acc[obj.collection].push(obj);
         return acc;
       }, {});
-  
-      const result = Object.values(groupedByCollection).map((group) => {
-        const filteredGroup = group.filter(
-          (nft) => nft.collector.toLowerCase() === address.toLowerCase()
+
+      const result = Object.values(groupedByCollection)
+        .map((group) => {
+          const filteredGroup = group.filter(
+            (nft) => nft.collector.toLowerCase() === address.toLowerCase()
+          );
+
+          // Find the NFT with the highest balance in each collection
+          return filteredGroup.reduce(
+            (max, obj) => (obj.balance > max.balance ? obj : max),
+            { balance: 0 } // Provide an initial value for the max object with a balance of 0
+          );
+        })
+        .filter(
+          (collection) =>
+            collection.collector &&
+            collection.collector.toLowerCase() === address.toLowerCase()
         );
-    
-        // Find the NFT with the highest balance in each collection
-        return filteredGroup.reduce(
-          (max, obj) => (obj.balance > max.balance ? obj : max),
-          { balance: 0 } // Provide an initial value for the max object with a balance of 0
-        );
-      }).filter(collection => collection.collector && collection.collector.toLowerCase() === address.toLowerCase());
-    
+
       setMyNfts(result);
     }
   }, [mintedLibreVerse, address]);
-  
-   // const [modal, setModal] = useState(false);
+
+  // const [modal, setModal] = useState(false);
   // const [price, setPrice] = useState(null);
 
   // const relist = (index, value) => {
@@ -86,9 +92,16 @@ const Library = ({ mintedLibreVerse, spinner,address }) => {
       <h3 className="text-3xl font-bold dark:text-white py-3">Library</h3>
       <div className="h-full flex flex-row flex-wrap md:gap-x-10 justify-between md:justify-start py-5 md:py-0">
         {myNfts.length === 0 ? (
-          <h2>Loading...</h2>
+          <div className="h-[20rem] flex justify-center items-center">
+            <h1>
+              You have no books in your library yet, mint some in the
+              marketplace 😉
+            </h1>
+          </div>
         ) : (
-          myNfts.map((book, i) => <MyBooks {...book} key={i} />)
+          myNfts.map((book, i) => <MyBooks {...book} key={i} 
+          libreVerse={libreVerse}
+          />)
         )}
       </div>
     </div>

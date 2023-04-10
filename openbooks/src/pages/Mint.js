@@ -1,16 +1,13 @@
-import React from "react";
+import React, { useContext } from "react";
 import { create } from "ipfs-http-client";
-import openbooksAbi from "../utils/openbooksAbi.json";
-import value from "../utils/openbooksAddress.json";
 import { ethers } from "ethers";
 import { useState, useRef } from "react";
-import { useSigner } from "wagmi";
 import { ToastContainer, toast } from "react-toastify";
 import WebViewer from "@pdftron/webviewer";
 import "react-toastify/dist/ReactToastify.css";
+import { LibreVerseContext } from "../utils/libreVerseContext";
 
-const Mint = () => {
-  const { data: signer } = useSigner();
+const Mint = ({ libreVerse }) => {
   const viewerRef = useRef(null);
 
   const [bookDetail, setBookDetail] = useState({
@@ -36,8 +33,7 @@ const Mint = () => {
         process.env.REACT_APP_PROJECT_SECRET
     );
 
-  const libreVerse = new ethers.Contract(value.address, openbooksAbi, signer);
-
+  // const libreVerse = useContext(LibreVerseContext)
   let ipfs;
 
   try {
@@ -483,7 +479,7 @@ const Mint = () => {
                 disabled={isFormFilled()}
                 className="text-white bg-gradient-to-r from-blue-500 via-blue-600 to-blue-700 hover:bg-gradient-to-br focus:ring-4 focus:outline-none focus:ring-blue-300 dark:focus:ring-blue-800 font-medium rounded-lg text-sm px-5 py-2.5 text-center mr-2 mb-2"
               >
-                Mint
+                Create
               </button>
             ) : (
               <button

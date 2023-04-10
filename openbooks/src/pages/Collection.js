@@ -1,27 +1,24 @@
-import React, { useState } from "react";
+import React, { useContext, useState } from "react";
 import { ethers } from "ethers";
 import { toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
-import {  useSigner } from "wagmi";
-import openbooksAbi from "../utils/openbooksAbi.json";
-import value from "../utils/openbooksAddress.json";
+import { LibreVerseContext } from "../utils/libreVerseContext";
 
-const Collection = ({ myCollection, profit }) => {
-  const { data: signer } = useSigner();
+const Collection = ({ myCollection, profit, libreVerse}) => {
   const [spin, setSpinner] = useState(false);
 
-  // const {image,description,collectionName,genre,price} = myCollection
-  const libreVerse = new ethers.Contract(value.address, openbooksAbi, signer);
+  // const { libreVerse } = useContext(LibreVerseContext);
 
   const claimHandler = async () => {
     try {
       setSpinner(true);
       const tx = await libreVerse.redeem();
-      tx.wait();
+      tx.wait().then(() => {
+        setSpinner(false);
+      });
       toast.success("profit redeemed succesfully");
     } catch (error) {
       toast.error("error", error.message);
-    } finally {
       setSpinner(false);
     }
   };
@@ -48,7 +45,9 @@ const Collection = ({ myCollection, profit }) => {
       </div>
 
       {myCollection.length === 0 ? (
-        <h1>Loading...</h1>
+        <div className="h-[20rem] flex justify-center items-center">
+          <h1>You have no created collections yet 😉</h1>
+        </div>
       ) : (
         <div className="h-full flex flex-row flex-wrap md:gap-x-10 justify-between md:justify-start py-5 md:py-0">
           {myCollection.map((collection, i) => (

@@ -1,36 +1,36 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useContext } from "react";
 import "./App.css";
-import { useAccount, useSigner } from "wagmi";
 import Home from "./pages/Home";
 import Mint from "./pages/Mint";
 import Collection from "./pages/Collection";
 import Profile from "./components/Profile";
-import { useContract, useProvider } from "wagmi";
 import axios from "axios";
-import openbooksAbi from "../src/utils/openbooksAbi.json";
-import value from "../src/utils/openbooksAddress.json";
-import {
-  BrowserRouter as Router,
-  Route,
-  Routes,
-} from "react-router-dom";
+import { useContract, useProvider } from "wagmi";
+import { BrowserRouter as Router, Route, Routes } from "react-router-dom";
 import Marketplace from "./pages/Marketplace";
 import Library from "./pages/Library";
+import openbooksAbi from "../src/utils/openbooksAbi.json";
+import value from "../src/utils/openbooksAddress.json";
+import { LibreVerseContext } from "./utils/libreVerseContext";
+import { useAccount, useSigner } from "wagmi";
+
 // import Toas
 
 function App() {
+  // const { libreVerse } = useContext(LibreVerseContext);
   const [spinner, setSpinner] = useState(false);
   const [allLibreVerse, setAllLibreVerse] = useState([]);
   const [mintedLibreVerse, setMintedLibreVerse] = useState([]);
   const [profit, setProfit] = useState(null);
-
   const { address, isConnected } = useAccount();
+
   const provider = useProvider();
+  const { data: signer } = useSigner();
 
   const libreVerse = useContract({
     address: value.address,
     abi: openbooksAbi,
-    signerOrProvider: provider,
+    signerOrProvider: isConnected ? signer : provider,
   });
 
   // fetch all NFTs on the smart contract
@@ -158,7 +158,7 @@ function App() {
             image: metadata.data.image,
             description: metadata.data.description,
             name: metadata.data.name,
-            balance: balance.toString()
+            balance: balance.toString(),
           };
           setMintedLibreVerse((prev) => [...prev, newMintedCollection]);
         }
@@ -176,8 +176,7 @@ function App() {
     } catch (error) {
       console.log({ error });
     }
-  }, [address]);
-
+  }, [address, profit, libreVerse]);
 
   const myCollection = allLibreVerse.filter(
     (collection) => collection.creator == address
@@ -188,7 +187,7 @@ function App() {
       <Profile />
       <Routes>
         <Route exact path="/" element={<Home />} />
-        <Route path="/create" element={<Mint />} />
+        <Route path="/create" element={<Mint libreVerse={libreVerse} />} />
         <Route
           path="/library"
           element={
@@ -196,13 +195,18 @@ function App() {
               mintedLibreVerse={mintedLibreVerse}
               spinner={spinner}
               address={address}
+              libreVerse={libreVerse}
             />
           }
         />
         <Route
           path="/marketplace"
           element={
-            <Marketplace allLibreVerse={allLibreVerse} spinner={spinner} />
+            <Marketplace
+              allLibreVerse={allLibreVerse}
+              spinner={spinner}
+              libreVerse={libreVerse}
+            />
           }
         />
         <Route
@@ -212,6 +216,7 @@ function App() {
               myCollection={myCollection}
               spinner={spinner}
               profit={profit}
+              libreVerse={libreVerse}
             />
           }
         />

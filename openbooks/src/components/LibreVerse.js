@@ -1,11 +1,8 @@
-import React, { useEffect, useState } from "react";
-import { useAccount, useConnect, useEnsName, useSigner } from "wagmi";
+import React, { useContext, useEffect, useState } from "react";
 import { ethers } from "ethers";
 import { toast } from "react-toastify";
-import { useContract, useProvider } from "wagmi";
 import "react-toastify/dist/ReactToastify.css";
-import openbooksAbi from "../utils/openbooksAbi.json";
-import value from "../utils/openbooksAddress.json";
+import { LibreVerseContext } from "../utils/libreVerseContext";
 
 const LibreVerse = ({
   image,
@@ -15,13 +12,12 @@ const LibreVerse = ({
   index,
   collection,
   collectionName,
+  libreVerse
 }) => {
   const [spin, setSpinner] = useState(false);
   const [copy, setCopy] = useState(false);
-  const { data: signer } = useSigner();
-  const provider = useProvider();
 
-  const libreVerse = new ethers.Contract(value.address, openbooksAbi, signer);
+  // const {libreVerse} = useContext(LibreVerseContext)
 
   const getCopies = async () => {
     const result = await libreVerse.collectionRemains(collection);
