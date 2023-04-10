@@ -4,33 +4,36 @@ import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import MyBooks from "../components/MyBooks";
 
-const Library = ({ mintedLibreVerse, spinner, address }) => {
+const Library = ({ mintedLibreVerse, spinner,address }) => {
   const [spin, setSpinner] = useState(false);
   const [myNfts, setMyNfts] = useState([]);
   useEffect(() => {
-    const groupedByCollection = mintedLibreVerse.reduce((acc, obj) => {
-      if (!acc[obj.collection]) {
-        acc[obj.collection] = [];
-      }
-      acc[obj.collection].push(obj);
-      return acc;
-    }, {});
-
-    const highestBalancePerCollection = Object.values(groupedByCollection).map(
-      (group) => {
-        return group.reduce((max, obj) =>
-          obj.balance > max.balance ? obj : max
+    if (mintedLibreVerse && mintedLibreVerse.length > 0 && address) {
+      const groupedByCollection = mintedLibreVerse.reduce((acc, obj) => {
+        if (!acc[obj.collection]) {
+          acc[obj.collection] = [];
+        }
+        acc[obj.collection].push(obj);
+        return acc;
+      }, {});
+  
+      const result = Object.values(groupedByCollection).map((group) => {
+        const filteredGroup = group.filter(
+          (nft) => nft.collector.toLowerCase() === address.toLowerCase()
         );
-      }
-    );
-
-    const nfts = highestBalancePerCollection.filter(
-      (nft) => nft.collector === address
-    );
-    setMyNfts(nfts);
-  }, [mintedLibreVerse]);
-
-  // const [modal, setModal] = useState(false);
+    
+        // Find the NFT with the highest balance in each collection
+        return filteredGroup.reduce(
+          (max, obj) => (obj.balance > max.balance ? obj : max),
+          { balance: 0 } // Provide an initial value for the max object with a balance of 0
+        );
+      }).filter(collection => collection.collector && collection.collector.toLowerCase() === address.toLowerCase());
+    
+      setMyNfts(result);
+    }
+  }, [mintedLibreVerse, address]);
+  
+   // const [modal, setModal] = useState(false);
   // const [price, setPrice] = useState(null);
 
   // const relist = (index, value) => {

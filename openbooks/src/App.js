@@ -158,7 +158,7 @@ function App() {
             image: metadata.data.image,
             description: metadata.data.description,
             name: metadata.data.name,
-            balance: balance.toString(),
+            balance: balance.toString()
           };
           setMintedLibreVerse((prev) => [...prev, newMintedCollection]);
         }
