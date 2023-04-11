@@ -27,10 +27,12 @@ import { alchemyProvider } from 'wagmi/providers/alchemy';
 const { chains, provider } = configureChains(
   [ polygonMumbai ],
   [
-    alchemyProvider({ apiKey: process.env.ALCHEMY_ID }),
-    publicProvider()
+    alchemyProvider({ apiKey: process.env.REACT_APP_ALCHEMY_ID }),
+    // publicProvider()
   ]
 );
+
+console.log("alchemy id",process.env.REACT_APP_ALCHEMY_ID);
 
 const { connectors } = getDefaultWallets({
 appName: 'My RainbowKit App',
